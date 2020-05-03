@@ -90,23 +90,128 @@ print(result_1)
 dec_t = DecisionTreeClassifier(min_samples_split = 20, random_state=99)
 dec_t.fit(x,y)
 
-test = pd.read_csv("/Users/milesklingenberg/Documents/UWMSBA/590/Data/train_house-1.csv", dtype=CAT_DTYPES)
+
+test = pd.read_csv("/Users/milesklingenberg/Documents/UWMSBA/590/Data/test_house-1.csv", dtype = CAT_DTYPES)
+
+##Okay....this took me a long time to realize... there are spaces in the
+## column names for the test set... which is why my dtypes are not working
+test['Lot Area'] = test['Lot Area'].fillna(0)
+test['Gr Liv Area'] = test['Gr Liv Area'].fillna(0)
+test['1st Flr SF'] = test['1st Flr SF'].fillna(0)
+test['Garage Area'] = test['Garage Area'].fillna(0)
 
 
-def create_test(data):
-    """"
-    bringing in and cleaning the test data.
-    """
-    test = pd.read_csv("/Users/milesklingenberg/Documents/UWMSBA/590/Data/train_house-1.csv", dtype=CAT_DTYPES)
-    for col, col_dtype in CAT_DTYPES.items():
-        if col_dtype == "category":
-            test[col]= test[col].astype("category").cat.codes
+test_1 = test[['Lot Area', 'Gr Liv Area', '1st Flr SF', 'Garage Area']]
+train_df_x = train_df[['LotArea', 'GrLivArea', '1stFlrSF', 'GarageArea']]
+train_df_y = train_df['SalePrice']
+
+dec_clipped = DecisionTreeClassifier(min_samples_split = 2, random_state = 99)
+dec_clipped_fit = dec_clipped.fit(train_df_x, train_df_y)
+dec_clipped_predict = dec_clipped.predict(test_1)
+predictions_1_clipped = pd.DataFrame(dec_clipped_predict, columns = ['output'])
+
+##sklearn has a way to export trees graphically
+
+from sklearn.externals.six import StringIO
+from IPython.display import Image
+from sklearn.tree import export_graphviz
+import pydotplus
+
+#dot_data = StringIO()
+
+#export_graphviz(dec_clipped_fit, out_file=dot_data,
+                #filled=True, rounded=True,
+                #special_characters=True)
+#graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
+#Image(graph.create_png())
+#graph.write_png("clipped_dec")
+
+##Taking graph out as it takes some time to run.
+## You can see that in hte min number of sample split at each one of my nodes I am allowing a split of 2. Therefore the graph will be quite
+## large and not really helpful for display.
+
+values = pd.read_excel("/Users/milesklingenberg/Documents/UWMSBA/590/Data/Values.xlsx")
+
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+print(sqrt(mean_squared_error(values['SalePrice'], predictions_1_clipped['output'])))
+
+###So we get an RMSE of 38,407 for the model that just uses the Random Forest Classifier.
+## THis is not good, but I guesss it depends on min and max....also we are using a decision tree..
+
+print(min(train_df['SalePrice']))
+print(max(train_df['SalePrice']))
+
+##Right, so on a scale of 34900 and max 755000 for data, 38,407 is not really acceptable.
+##Since the sample split in the tree is 2, this means it is really only spliting on itself with
+##an average of the split within the last node.
+
+##It would probably be helpful at this point to look at the data as opposed to random forest classifier.
+
+import matplotlib.pyplot as plt
+### I don't see a column for total square feet... am I missing it ?
+
+SFTotals = train_df.filter(regex="SF")
+train_df['totalsf'] = SFTotals.sum(axis=1)
+
+#plt.scatter(train_df['totalsf'], train_df['SalePrice'])
+#plt.show()
+
+##Oh yeah, clearly linear.
+
+#plt.scatter(train_df['YearBuilt'], train_df['SalePrice'])
+#plt.show()
+
+##Also linear for the most part, eponential.
+
+##plt.scatter(train_df['OverallCond'], train_df['SalePrice'])
+##plt.show()
+
+#yes
+
+##plt.scatter(train_df['OverallCond'], train_df['SalePrice'])
+##plt.show()
+
+# I don't know what the difference is between overall condition and overall quality.
+## For instance...
+
+#plt.scatter(train_df['BsmtQual'], train_df['SalePrice'], c = "orange")
+#plt.scatter(train_df['BsmtCond'], train_df['SalePrice'], c = "blue")
+#plt.legend()
+#plt.show()
+
+# I don't really undersand the difference between those two, but I will use them as they both
+# look to have decent purity.
+
+## We can start with these and see how we do, fortunately, we have already encoded these.
+
+train_new_x = train_df[['totalsf', 'YearBuilt', 'OverallCond', 'BsmtQual', 'BsmtCond']]
+dec_clipped = DecisionTreeClassifier(criterion = 'entropy', max_depth = 60, random_state = 99)
+dec_cut_fit = dec_clipped.fit(train_new_x, train_df_y)
+
+## I Need a square fottage for test
+SFTotals = test.filter(regex="SF")
+test['totalsf'] = SFTotals.sum(axis=1)
+
+test_2 = test[['totalsf', 'Year Built', 'Overall Cond', 'Bsmt Qual', 'Bsmt Cond']]
+
+##ugh
+test_2['BsmtQual'] = test_2['Bsmt Qual'].astype('category').cat.codes
+test_2['BsmtCond'] = test_2['Bsmt Cond'].astype('category').cat.codes
+test_2 = test_2.drop(['Bsmt Qual', 'Bsmt Cond'], axis = 1)
 
 
-    return test
+cutree_predictions = dec_cut_fit.predict(test_2)
+predictions_2_cut = pd.DataFrame(cutree_predictions, columns = ['output'])
+print(sqrt(mean_squared_error(values['SalePrice'],predictions_2_cut['output'])))
 
-test_1 = create_test(test)
+##30,956 is the error, which is better, but still not great.
+## YOu can see up above that the depth of the tree is 60 because we have a continous varaiable there are a lot of splits happening. To cut the
+## tree at a low level would be bad in that it would average the prices, For accuracy sake we don't really want to do unlesss we were only
+##concerned with the bin that the final price might fall into.
 
-test_1 = test[['LotArea', 'GrLivArea', '1stFlrSF', 'GarageArea']]
-test_1 = pd.DataFrame(test_1)
-print(test_1.head(10))
+## I will probably stop here, 30k is about what we could get the RMSE to. This is not terrible for a decision tree using continous variables.
+##This data is clearly linear, so probably not something we would do on a real world example.
+
+##Another thing to note is that I did two variations of a decision tree, one using entropy and the other not. Python doesn't exactly have
+## a direct translation.
