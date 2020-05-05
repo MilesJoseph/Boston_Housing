@@ -65,7 +65,7 @@ df_corr =data[data.columns[1:]].corr()['SalePrice'][:]
 df_corr = pd.DataFrame(df_corr)
 df_corr['abs_value_corr'] = df_corr['SalePrice'].apply(lambda x: abs(x) )
 df_corr = df_corr.sort_values('abs_value_corr', ascending =False)
-print(df_corr.head(25))
+#print(df_corr.head(25))
 
 #plt.scatter(data['OverallQual'], data['SalePrice'])
 #plt.show()
@@ -100,4 +100,75 @@ y_var = data['SalePrice']
 
 x_1 = sm.add_constant((x))
 model = sm.OLS(y_var, x_1).fit()
-print(model.pvalues)
+
+cols = list(x.columns)
+pmax = 1
+while (len(cols) > 0):
+    p = []
+    X_1 = x[cols]
+    X_1 = sm.add_constant(X_1)
+    model = sm.OLS(y_var, X_1).fit()
+    p = pd.Series(model.pvalues.values[1:], index = cols)
+    pmax = max(p)
+    feature_with_p_max = p.idxmax()
+    if(pmax>0.05):
+        cols.remove(feature_with_p_max)
+    else:
+        break
+
+selected_features_be = cols
+print(selected_features_be)
+
+data_1 = data[['OverallQual', 'totalsf', 'GarageCars', 'ExterQual', 'TotalBsmtSF', '1stFlrSF', 'KitchenQual', 'SalePrice']]
+data_1 = np.array(data)
+
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense
+from tensorflow.python.keras.wrappers.scikit_learn import KerasRegressor
+
+
+x = data_1[:,0:7]
+y = data_1[:,7]
+y=np.reshape(y, (-1,1))
+scaler_x = MinMaxScaler()
+scaler_y = MinMaxScaler()
+print(scaler_x.fit(x))
+xscale=scaler_x.transform(x)
+print(scaler_y.fit(y))
+yscale=scaler_y.transform(y)
+
+model = Sequential()
+model.add(Dense(3, input_dim=7, kernel_initializer='normal', activation='relu'))
+model.add(Dense(2, activation='relu'))
+model.add(Dense(1, activation='linear'))
+model.summary()
+
+model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mse', 'mae'])
+history = model.fit(xscale, yscale, epochs = 150, batch_size = 50, verbose = 1)
+
+test_ = pd.read_csv("/Users/milesklingenberg/Documents/UWMSBA/590/Data/test_house-1.csv", dtype=CAT_DTYPES)
+
+
+SFTotals_test = test_.filter(regex="SF")
+test_['totalsf_test'] = SFTotals_test.sum(axis=1)
+
+## we could also do one for total quality
+
+QualTotal_test = test_.filter(regex="Qual")
+test_["qualttotal_test"] = QualTotal_test.sum(axis=1)
+
+data_2 = test_[['Overall Qual', 'totalsf_test', 'Garage Cars', 'Exter Qual', 'Total Bsmt SF', '1st Flr SF', 'Kitchen Qual']]
+data_2['Kitchen Qual'] = data_2['Kitchen Qual'].astype('category').cat.codes
+data_2['Exter Qual'] = data_2['Exter Qual'].astype('category').cat.codes
+data_2 = data_2.dropna()
+data_3 = np.array(data_2)
+pd.set_option('display.max_columns', 500)
+
+Xnew= scaler_x.transform(data_3)
+ynew= model.predict(Xnew)
+#invert normalize
+ynew = scaler_y.inverse_transform(ynew)
+Xnew = scaler_x.inverse_transform(Xnew)
+
+)
