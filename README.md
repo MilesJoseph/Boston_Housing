@@ -15,6 +15,6 @@ I then used those variables in a decision tree.
 
 The document Model_590_cart.py satisfies and assignment that I was working on. However, to actually model this problem correctly I will explore other options.
 
-##Data Exploration
+## Data Exploration
 
 The data contains 80 variables with a single dependent variable [SalePrice].
