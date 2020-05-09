@@ -17,4 +17,8 @@ The document Model_590_cart.py satisfies and assignment that I was working on. H
 
 ## Data Exploration
 
-The data contains 80 variables with a single dependent variable [SalePrice].
+Please read through my notes in the data exploration. This was a quick walk through of the data with some feature engineering.
+
+## Keras Example
+
+In this file I am modeling the data with  simple MLP network using Keras.
