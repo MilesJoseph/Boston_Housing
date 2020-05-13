@@ -50,7 +50,7 @@ print('keras_version:', keras.__version__)
 
 # #We know which variables going to use based on our data exploration.
 
-data_1 = data[['OverallQual','totalsf', 'ExterQual', 'SalePrice']]
+data_1 = data[['OverallQual', 'totalsf', 'ExterQual', 'SalePrice']]
 #print(data_1.isnull().any())
 ##x_train = data_1[['OverallQual', 'totalsf', 'GarageCars', 'ExterQual', 'TotalBsmtSF', '1stFlrSF', 'KitchenQual',]]
 ##y_train = data_1['SalePrice']
@@ -82,7 +82,7 @@ x_test = test_[:,0:3]
 def build_model():
   model = keras.Sequential([
     layers.Dense(32, activation='relu', input_dim=3),
-    layers.Dense(32, activation='relu'),
+    layers.Dense(64, activation='relu'),
     layers.Dense(1,  activation = 'linear'),
 
 
@@ -96,6 +96,8 @@ def build_model():
   return model
 
 model = build_model()
+
+
 
 EPOCHS = 1000
 
@@ -165,7 +167,5 @@ print(results_untransform.to_string())
 
 plt.scatter(results_untransform['error'], results_untransform['SalePrice'])
 plt.show()
-
-
 
 
