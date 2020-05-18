@@ -164,8 +164,10 @@ results_untransform['error'] = results_untransform['SalePrice']-results_untransf
 print(results_untransform.to_string())
 
 plt.scatter(results_untransform['error'], results_untransform['SalePrice'])
-plt.show()
+plt.show().
 
+
+#####
 
 
 
