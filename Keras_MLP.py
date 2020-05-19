@@ -167,7 +167,5 @@ plt.scatter(results_untransform['error'], results_untransform['SalePrice'])
 plt.show().
 
 
-#####
-
 
 
