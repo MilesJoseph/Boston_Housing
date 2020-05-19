@@ -29,7 +29,7 @@ def create_data_categorical(data):
 data = create_data_categorical(data)
 
 
-# we can start by looking at some of the data intuitively.
+# # we can start by looking at some of the data intuitively.
 
 #for col in data:
     #print(col)
@@ -51,12 +51,12 @@ data = create_data_categorical(data)
 
 # let's just look at correlation and sort it
 
-# coming back, let's recreate the total square footage.
+# #coming back, let's recreate the total square footage.
 
 SFTotals = data.filter(regex="SF")
 data['totalsf'] = SFTotals.sum(axis=1)
 
-# we could also do one for total quality
+# #we could also do one for total quality
 
 QualTotal = data.filter(regex="Qual")
 data["qualttotal"] = QualTotal.sum(axis=1)
@@ -65,7 +65,7 @@ df_corr =data[data.columns[1:]].corr()['SalePrice'][:]
 df_corr = pd.DataFrame(df_corr)
 df_corr['abs_value_corr'] = df_corr['SalePrice'].apply(lambda x: abs(x) )
 df_corr = df_corr.sort_values('abs_value_corr', ascending =False)
-print(df_corr.head(25))
+#print(df_corr.head(25))
 
 # plt.scatter(data['OverallQual'], data['SalePrice'])
 # plt.show()
