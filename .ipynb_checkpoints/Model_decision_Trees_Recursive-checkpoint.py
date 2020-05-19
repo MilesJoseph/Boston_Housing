@@ -50,12 +50,12 @@ train_df['GarageYrBlt'] = train_df['GarageYrBlt'].fillna(0)
 
 # ## It turned out it was just an issue for float, thankfully, something to figure out in the future.
 
-# Just to mention here, I am using a random forest classifier to figure out which variables to select. If I were doing this
-# in the future I would probably do a linear recursive feauture engineering, but since we are doing decision trees I will
-# stick to a tree based approach.
+# #Just to mention here, I am using a random forest classifier to figure out which variables to select. If I were doing this
+# #in the future I would probably do a linear recursive feauture engineering, but since we are doing decision trees I will
+# # stick to a tree based approach.
 
 
-# Setting up the model here for recursive.
+# #Setting up the model here for recursive.
 
 
 clf = RandomForestClassifier(n_estimators = 1000, random_state=0, n_jobs=-1)
@@ -65,10 +65,10 @@ y = train_df["SalePrice"]
 
 clf.fit(x,y)
 
-#for feature in zip(list(train_df), clf.feature_importances_):
-   #print(feature)
+for feature in zip(list(train_df), clf.feature_importances_):
+   print(feature)
 
-# Then we will want to select the best features, I am not going to read that whole list.
+# ## Then we will want to select the best features, I am not going to read that whole list.
 
 feat_labels = list(train_df.iloc[:,0:80])
 clf_features = pd.DataFrame(clf.feature_importances_)
@@ -76,10 +76,9 @@ feat_labels = pd.DataFrame(feat_labels)
 
 merged_df = [feat_labels, clf_features]
 
-
 # This merged data frame has the list of variables ranked by their gini impurity.
-# I will start by looking at LotArea, GrLivArea, 1stfloor, GarageArea as these have the best gini purity.
-# I will also explore some other options to see if this was incorrect
+# # I will start by looking at LotArea, GrLivArea, 1stfloor, GarageArea as these have the best gini purity.
+# # I will also explore some other options to see if this was incorrect
 
 result = pd.concat(merged_df, axis = 1)
 result.columns = ['feat', 'importance']
@@ -110,7 +109,7 @@ dec_clipped_fit = dec_clipped.fit(train_df_x, train_df_y)
 dec_clipped_predict = dec_clipped.predict(test_1)
 predictions_1_clipped = pd.DataFrame(dec_clipped_predict, columns = ['output'])
 
-# sklearn has a way to export trees graphically
+# #sklearn has a way to export trees graphically
 
 from sklearn.externals.six import StringIO
 from IPython.display import Image
@@ -126,9 +125,9 @@ import pydotplus
 #Image(graph.create_png())
 #graph.write_png("clipped_dec")
 
-# Taking graph out as it takes some time to run.
-# You can see that in hte min number of sample split at each one of my nodes I am allowing a split of 2. Therefore the graph will be quite
-# large and not really helpful for display.
+# #Taking graph out as it takes some time to run.
+# # You can see that in hte min number of sample split at each one of my nodes I am allowing a split of 2. Therefore the graph will be quite
+# # large and not really helpful for display.
 
 values = pd.read_excel("/Users/milesklingenberg/Documents/UWMSBA/590/Data/Values.xlsx")
 
@@ -136,17 +135,17 @@ from sklearn.metrics import mean_squared_error
 from math import sqrt
 print(sqrt(mean_squared_error(values['SalePrice'], predictions_1_clipped['output'])))
 
-# So we get an RMSE of 38,407 for the model that just uses the Random Forest Classifier.
-# THis is not good, but I guesss it depends on min and max....also we are using a decision tree..
+# ##So we get an RMSE of 38,407 for the model that just uses the Random Forest Classifier.
+# # THis is not good, but I guesss it depends on min and max....also we are using a decision tree..
 
 print(min(train_df['SalePrice']))
 print(max(train_df['SalePrice']))
 
-# Right, so on a scale of 34900 and max 755000 for data, 38,407 is not really acceptable.
-# Since the sample split in the tree is 2, this means it is really only spliting on itself with
-# an average of the split within the last node.
+# #Right, so on a scale of 34900 and max 755000 for data, 38,407 is not really acceptable.
+# #Since the sample split in the tree is 2, this means it is really only spliting on itself with
+# #an average of the split within the last node.
 
-# It would probably be helpful at this point to look at the data as opposed to random forest classifier.
+# #It would probably be helpful at this point to look at the data as opposed to random forest classifier.
 
 import matplotlib.pyplot as plt
 ### I don't see a column for total square feet... am I missing it ?
@@ -215,5 +214,3 @@ print(sqrt(mean_squared_error(values['SalePrice'],predictions_2_cut['output'])))
 
 # #Another thing to note is that I did two variations of a decision tree, one using entropy and the other not. Python doesn't exactly have
 # # a direct translation.
-
-
