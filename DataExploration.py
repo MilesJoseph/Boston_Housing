@@ -18,7 +18,6 @@ CAT_DTYPES={"Id": "int64", "MSSubClass": "int64", "MSZoning": "category", "Stree
 
 data = pd.read_csv("/Users/milesklingenberg/Documents/UWMSBA/590/Data/train_house-1.csv", dtype=CAT_DTYPES)
 
-
 def create_data_categorical(data):
     for col, col_dtype in CAT_DTYPES.items():
         if col_dtype == "category":
@@ -50,23 +49,16 @@ df_corr['abs_value_corr'] = df_corr['SalePrice'].apply(lambda x: abs(x) )
 df_corr = df_corr.sort_values('abs_value_corr', ascending =False)
 print(df_corr.head(25))
 
-
-
 #let's look at those two
 plt.scatter(data['OverallQual'], data['SalePrice'])
 plt.show()
-
-
 
 ##The distribution of our categories makes it appear that linear regression would lead
 ##to a high error rate.
 
 #let's look at total sf
-
 plt.scatter(data['totalsf'], data['SalePrice'])
 plt.show()
-
-
 
 #Let's look at some basics of the data, we kind of skipped over that.
 #Let's check for nulls and then we will check for min and max.
@@ -87,8 +79,6 @@ def missing_values_table(df):
         return mis_val_table_ren_columns
 
 missing_values_table(data)
-
-
 
 # So this isn't too bad, just three columns.
 #None of them are categorical so this is also good, for GarageBuilt I am going to impute 0, because
@@ -126,11 +116,7 @@ print(p.sort_values(ascending =True))
 
 
 ##Quite a few columns that have signifigance.
-<<<<<<< HEAD
 ##Let's see if we can do some dimensionality reduction.
-
-
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
 
@@ -162,7 +148,4 @@ plt.show()
 
 data.to_csv(r'/Users/milesklingenberg/Documents/UWMSBA/590/Data/cleaned_data.csv', index=False)
 
-#There is some interesting stuff to try here. time to move to the modeling. 
-=======
-##Let's see if we can do some dimensionality reduction. 
->>>>>>> 2fcd2c52e6c19520b1cfd5cdd2bff9620f57edad
+#There is some interesting stuff to try here. time to move to the modeling.
