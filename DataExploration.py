@@ -126,6 +126,7 @@ print(p.sort_values(ascending =True))
 
 
 ##Quite a few columns that have signifigance.
+<<<<<<< HEAD
 ##Let's see if we can do some dimensionality reduction.
 
 
@@ -162,3 +163,6 @@ plt.show()
 data.to_csv(r'/Users/milesklingenberg/Documents/UWMSBA/590/Data/cleaned_data.csv', index=False)
 
 #There is some interesting stuff to try here. time to move to the modeling. 
+=======
+##Let's see if we can do some dimensionality reduction. 
+>>>>>>> 2fcd2c52e6c19520b1cfd5cdd2bff9620f57edad
