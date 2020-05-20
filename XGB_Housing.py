@@ -58,9 +58,9 @@ def f(row):
 test['fireplacefeature'] = test.apply(f,axis=1)
 
 
-#X_train.set_index('Id', inplace = True)
-#y_train.set_index('Id', inplace = True)
-#test.set_index('Id', inplace = True)
+# #X_train.set_index('Id', inplace = True)
+# #y_train.set_index('Id', inplace = True)
+# #test.set_index('Id', inplace = True)
 
 
 from sklearn import metrics, tree
@@ -79,7 +79,7 @@ param_grid = {
 
 CV_XGB = GridSearchCV(estimator=XGB, param_grid=param_grid, cv= 10)
 
-%time CV_XGB.fit(xtrain, ytrain)
+# %time CV_XGB.fit(xtrain, ytrain)
 
 best_xgb_model = CV_XGB.best_estimator_
 print(CV_XGB.best_score_, CV_XGB.best_params_)
@@ -123,4 +123,4 @@ results = results.sort_values('importance', ascending = False)
 results = results.head(25)
 results
 
-#I went through, and the amount of features are actually helpful for this model. We can try creating a few more features. 
+# I went through, and the amount of features are actually helpful for this model. We can try creating a few more features. 
