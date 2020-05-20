@@ -439,6 +439,30 @@ data[qual_vars]
 x = data.iloc[:, 1:80]
 y = data.iloc[:, 80]
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 cols = list(x.columns)
 pmax = 1
 while (len(cols) > 0):
